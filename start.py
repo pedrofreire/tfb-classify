@@ -3,10 +3,6 @@ import time
 import numpy as np
 import cvxpy as cp
 
-import torch
-from torch import nn, optim
-from torch.nn import functional as F
-
 ### Utils
 
 def read_csv(
@@ -170,7 +166,7 @@ def svm(
 
     return get_gaussian_kernel_fn(X, sigma, alpha.value)
 
-def convs(
+def conv_net(
     X,
     Y,
     C=0.01,
@@ -178,6 +174,10 @@ def convs(
     *args,
     **kwargs,
 ):
+    import torch
+    from torch import nn, optim
+    from torch.nn import functional as F
+
     bases = ['A', 'C', 'G', 'T']
     base_to_idx = {c:i for i, c in enumerate(bases)}
     def dna_to_vec(x):
@@ -248,7 +248,7 @@ def convs(
     return fn
 
 
-def nn2(
+def mlp(
     X,
     Y,
     C=0.01,
@@ -257,6 +257,10 @@ def nn2(
     *args,
     **kwargs,
 ):
+    import torch
+    from torch import nn, optim
+    from torch.nn import functional as F
+
     hs = 100
     model = nn.Sequential(
         nn.Linear(100, hs),
@@ -314,8 +318,8 @@ def main(
 ):
     fns = {
         'svm': svm,
-        'nn': convs,
-        'nn2': nn2,
+        'conv': conv_net,
+        'mlp': mlp,
         'logreg': logistic_regression,
         'klogreg': kernel_logistic_regression,
     }
@@ -353,6 +357,10 @@ def main(
         save_submission(y_submit, 'Yte.csv')
 
 
-import fire
 if __name__ == '__main__':
-    fire.Fire(main)
+    try:
+        import fire
+    except:
+        main()
+    else:
+        fire.Fire(main)
